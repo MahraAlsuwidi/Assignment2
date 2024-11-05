@@ -85,3 +85,23 @@ class ShoppingCart:
             items_str += str(item) + ', '
         items_str = items_str[:-2]
         return f"ShoppingCart(customer={self._customer}, items=[{items_str}])"
+
+class Order:
+    def __init__(self, customer, shopping_cart, order_date):
+        self._customer = customer
+        self._shopping_cart = shopping_cart
+        self._order_date = order_date
+        self._invoice = None
+
+    def generate_invoice(self):
+        self._invoice = Invoice(self)
+        return self._invoice
+
+    def get_customer(self):
+        return self._customer
+
+    def get_shopping_cart(self):
+        return self._shopping_cart
+
+    def __str__(self):
+        return f"Order(customer={self._customer}, order_date={self._order_date})"
