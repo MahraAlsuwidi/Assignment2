@@ -26,3 +26,30 @@ class EBook:
 
     def __str__(self):
         return f"EBook(title={self._title}, author={self._author}, price={self._price})"
+
+class Customer:
+    def __init__(self, name, contact_info, is_loyalty_member=False):
+        self._name = name
+        self._contact_info = contact_info
+        self._is_loyalty_member = is_loyalty_member
+
+    def get_name(self):
+        return self._name
+
+    def set_name(self, name):
+        self._name = name
+
+    def get_contact_info(self):
+        return self._contact_info
+
+    def set_contact_info(self, contact_info):
+        self._contact_info = contact_info
+
+    def get_is_loyalty_member(self):
+        return self._is_loyalty_member
+
+    def set_is_loyalty_member(self, status):
+        self._is_loyalty_member = status
+
+    def __str__(self):
+        return f"Customer(name={self._name}, contact_info={self._contact_info})"
