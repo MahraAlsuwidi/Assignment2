@@ -105,3 +105,25 @@ class Order:
 
     def __str__(self):
         return f"Order(customer={self._customer}, order_date={self._order_date})"
+
+class Invoice:
+    def __init__(self, order):
+        self._order = order
+        self._vat_rate = 0.08
+        self._discount = 0.0
+        self._total_amount = self.calculate_total()
+
+    def calculate_total(self):
+        total = self._order.get_shopping_cart().calculate_total()
+        self._discount = self.calculate_discount(total)
+        total_after_discount = total - self._discount
+        vat = total_after_discount * self._vat_rate
+        return total_after_discount + vat
+
+    def calculate_discount(self, total):
+        if self._order.get_customer().get_is_loyalty_member():
+            return total * 0.10
+        return 0.0
+
+    def __str__(self):
+        return f"Invoice(total_amount={self._total_amount}, discount={self._discount})"
