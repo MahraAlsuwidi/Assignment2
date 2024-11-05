@@ -53,3 +53,35 @@ class Customer:
 
     def __str__(self):
         return f"Customer(name={self._name}, contact_info={self._contact_info})"
+
+
+class ShoppingCart:
+    def __init__(self, customer):
+        self._customer = customer
+        self._items = []
+
+    def add_item(self, ebook):
+        self._items.append(ebook)
+
+    def remove_item(self, ebook):
+        self._items.remove(ebook)
+
+    def update_item_quantity(self, ebook, quantity):
+        if ebook in self._items:
+            self.remove_item(ebook)
+            self.add_item(ebook)
+
+    def get_items(self):
+        return self._items
+    def calculate_total(self):
+        total = 0
+        for ebook in self._items:
+            total += ebook.get_price()
+        return total
+
+    def __str__(self):
+        items_str = ''
+        for item in self._items:
+            items_str += str(item) + ', '
+        items_str = items_str[:-2]
+        return f"ShoppingCart(customer={self._customer}, items=[{items_str}])"
