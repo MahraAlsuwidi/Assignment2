@@ -1,10 +1,12 @@
 class EBook:
-    def __init__(self, title, author, publication_date, genre, price):
+    def __init__(self, title, author, publication_date, genre, price, language, pages):
         self._title = title
         self._author = author
         self._publication_date = publication_date
         self._genre = genre
         self._price = price
+        self._language = language
+        self._pages = pages
 
     def get_title(self):
         return self._title
@@ -27,11 +29,36 @@ class EBook:
     def __str__(self):
         return f"EBook(title={self._title}, author={self._author}, price={self._price})"
 
+
+class DigitalEBook(EBook):
+    def __init__(self, title, author, publication_date, genre, price, language, pages, file_size, format_type):
+        super().__init__(title, author, publication_date, genre, price, language, pages)
+        self._file_size = file_size
+        self._format_type = format_type
+
+    def get_file_size(self):
+        return self._file_size
+
+    def set_file_size(self, file_size):
+        self._file_size = file_size
+
+    def get_format_type(self):
+        return self._format_type
+
+    def set_format_type(self, format_type):
+        self._format_type = format_type
+
+    def __str__(self):
+        return f"DigitalEBook(title={self._title}, author={self._author}, file_size={self._file_size}MB)"
+
+
 class Customer:
-    def __init__(self, name, contact_info, is_loyalty_member=False):
+    def __init__(self, name, contact_info, address, is_loyalty_member=False, referrer=None):
         self._name = name
         self._contact_info = contact_info
+        self._address = address
         self._is_loyalty_member = is_loyalty_member
+        self._referrer = referrer  # unary relationship for referral
 
     def get_name(self):
         return self._name
@@ -57,8 +84,9 @@ class Customer:
 
 class ShoppingCart:
     def __init__(self, customer):
-        self._customer = customer
+        self._customer = customer  # binary association with Customer
         self._items = []
+        self._cart_id = f"CART-{customer.get_name()}"
 
     def add_item(self, ebook):
         self._items.append(ebook)
@@ -66,32 +94,24 @@ class ShoppingCart:
     def remove_item(self, ebook):
         self._items.remove(ebook)
 
-    def update_item_quantity(self, ebook, quantity):
-        if ebook in self._items:
-            self.remove_item(ebook)
-            self.add_item(ebook)
-
     def get_items(self):
         return self._items
+
     def calculate_total(self):
-        total = 0
-        for ebook in self._items:
-            total += ebook.get_price()
-        return total
+        return sum(item.get_price() for item in self._items)
 
     def __str__(self):
-        items_str = ''
-        for item in self._items:
-            items_str += str(item) + ', '
-        items_str = items_str[:-2]
+        items_str = ', '.join(str(item) for item in self._items)
         return f"ShoppingCart(customer={self._customer}, items=[{items_str}])"
 
+
 class Order:
-    def __init__(self, customer, shopping_cart, order_date):
+    def __init__(self, customer, shopping_cart, order_date, status):
         self._customer = customer
-        self._shopping_cart = shopping_cart
+        self._shopping_cart = shopping_cart  # aggregation relationship
         self._order_date = order_date
-        self._invoice = None
+        self._status = status
+        self._invoice = None  # composition with Invoice
 
     def generate_invoice(self):
         self._invoice = Invoice(self)
@@ -104,7 +124,8 @@ class Order:
         return self._shopping_cart
 
     def __str__(self):
-        return f"Order(customer={self._customer}, order_date={self._order_date})"
+        return f"Order(customer={self._customer}, order_date={self._order_date}, status={self._status})"
+
 
 class Invoice:
     def __init__(self, order):
@@ -127,3 +148,21 @@ class Invoice:
 
     def __str__(self):
         return f"Invoice(total_amount={self._total_amount}, discount={self._discount})"
+
+
+class Discount:
+    def __init__(self, loyalty_discount=0.1, bulk_discount=0.2):
+        self._loyalty_discount = loyalty_discount
+        self._bulk_discount = bulk_discount
+
+    def apply_loyalty_discount(self, total):
+        return total * (1 - self._loyalty_discount)
+
+    def apply_bulk_discount(self, total, item_count):
+        if item_count >= 5:
+            return total * (1 - self._bulk_discount)
+        return total
+
+    def __str__(self):
+        return f"Discount(loyalty_discount={self._loyalty_discount}, bulk_discount={self._bulk_discount})"
+
